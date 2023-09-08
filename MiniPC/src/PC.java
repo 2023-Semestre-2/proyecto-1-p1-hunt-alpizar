@@ -103,6 +103,87 @@ public class PC {
         int valorAC = registros.get("AC").getValor();
         registros.get(registro).setValor(valorAC);
     }
+    /*
+    public void ejecutarINC() {
+        int valorAC = registros.get("AC").getValor();
+        int nuevoValor = valorAC + 1;
+        registros.get("AC").setValor(nuevoValor);
+    }
+    
+    public void ejecutarINCRegistro() {
+        int valorAC = registros.get("AC").getValor();
+        int valorReg = registros.get(registro).getValor();
+        int nuevoValor =valorReg + 1;
+        registros.get(registro).setValor(nuevoValor);
+    }
+    
+    public void ejecutarDEC() {
+        int valorAC = registros.get("AC").getValor();
+        int nuevoValor = valorAC - 1;
+        registros.get("AC").setValor(nuevoValor);
+    }
+    
+    public void ejecutarDECRegistro() {
+        int valorAC = registros.get("AC").getValor();
+        int valorReg = registros.get(registro).getValor();
+        int nuevoValor =valorReg - 1;
+        registros.get(registro).setValor(nuevoValor); 
+    }
     
     
-}
+    public void ejecutarSwap() {
+        
+    }
+    
+    
+    public void ejecutarINT20H() {
+        
+    }
+    
+    
+    public void ejecutarINT10H() {
+        
+    }
+    
+    
+    
+    public void ejecutarINT09H() {
+        
+    }
+    
+    
+    public void ejecutarJMP() {
+        
+    }
+    
+    
+    public void ejecutarCMP() {
+        
+    }
+    
+    
+    public void ejecutarJE() {
+        
+    }
+    
+    
+    public void ejecutarJNE() {
+        
+    }
+    
+    
+    public void ejecutarPARAM() {
+        
+    }
+    
+    
+    public void ejecutarPUSH() {
+        
+    }
+    
+    public void ejecutarPOP() {
+        
+    }
+    */
+    
+} 

@@ -22,7 +22,9 @@ import java.util.Random;
 public class Asistente {
     
     static final String[] REGISTROSVALIDOS = {"AX", "BX", "CX", "DX"};
-    static final String[] OPERADORESVALIDO = {"MOV", "LOAD", "ADD", "SUB", "STORE"}; 
+    static final String[] OPERADORESVALIDO = {"MOV", "LOAD", "ADD", "SUB", "STORE","INC","DEC",
+                                              "SWAP", "INT 20H", "INT 10H", "INT 09H", "JMP" ,
+                                              "CMP","JE","JNE","PARAM","PUSH", "POP"};
     static Dictionary<String, String> binarios;
     static{
         binarios= new Hashtable<>();
