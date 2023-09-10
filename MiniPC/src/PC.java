@@ -1,9 +1,13 @@
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Dictionary;
-import java.util.Hashtable;
 import java.util.List;
-
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -14,26 +18,64 @@ import java.util.List;
  * @author jeanp
  */
 public class PC {
-    static Dictionary<String, Registro> registros;
-    static{
-        registros= new Hashtable<>();
-        registros.put("0001", new Registro("AX"));
-        registros.put("0010", new Registro("BX"));
-        registros.put("0011", new Registro("CX"));
-        registros.put("0100", new Registro("DX"));
-        registros.put("AC", new Registro("AC"));
-        registros.put("PC", new Registro("PC"));
-        registros.put("IR", new Registro("IR"));
-        
-    }
+    private static ArrayList<BCP> bcps;
     private ArrayList<String[]> instruccionesASM;
-    private ArrayList<String[]> instruccionesbin;
     private int[] parametros = new int[3];
+    private int espacioMemoria;
+    ArrayList<Object> memoria;
+    private int espacioDisco;
+    ArrayList<Object> disco;
 
     public PC() {
+        inicializarAlmacenamiento();
     }
 
-    
+    private void inicializarAlmacenamiento(){
+        System.out.println("inicializarAlmacenamiento");
+        try {
+           List<String> lineasArchivo = new ArrayList<String>();  
+           BufferedReader bf = new BufferedReader(new FileReader("src/config.txt"));
+           String linea = bf.readLine();      
+           while (linea != null) {
+               if(!linea.equals("")){
+                   lineasArchivo.add(linea);//ignora lineas en blanco   
+               }
+               linea = bf.readLine();  
+           }
+           bf.close();       
+           String[] array = lineasArchivo.toArray(new String[0]);
+
+      
+           String[] infoMemoria = array[0].split(":");
+           espacioMemoria = Integer.parseInt(infoMemoria[1]);
+           
+           String[] infoDisco = array[1].split(":");
+           espacioDisco = Integer.parseInt(infoDisco[1]);
+           
+           System.out.println(espacioMemoria);
+           System.out.println(espacioDisco);
+           memoria = new ArrayList<Object>(espacioMemoria);
+           disco = new ArrayList<Object>(espacioDisco);
+           
+            DefaultTableModel modeloMemoria =  (DefaultTableModel)cargarArchivo.tablaMemoria.getModel();
+            modeloMemoria.setRowCount(espacioMemoria);
+            cargarArchivo.tablaMemoria.setModel(modeloMemoria);
+            
+            DefaultTableModel modeloDisco =  (DefaultTableModel)cargarArchivo.tablaDisco.getModel();
+            modeloDisco.setRowCount(espacioDisco);
+            cargarArchivo.tablaDisco.setModel(modeloDisco);
+            
+        } catch (Exception e) {
+            
+           System.out.println("no se ha encontrado el archivo");
+        }
+        
+        
+        //ArrayList<String[]> lista = new ArrayList<String[]>();
+        //String[] dividido = null;
+        //String[] lista = input.split(",");
+        
+    }
 
     public ArrayList<String[]> getInstruccionesASM() {
         return instruccionesASM;
@@ -43,21 +85,46 @@ public class PC {
         this.instruccionesASM = instruccionesASM;
     }
 
-    public ArrayList<String[]> getInstruccionesbin() {
-        return instruccionesbin;
-    }
-
-    public void setInstruccionesbin(ArrayList<String[]> instruccionesbin) {
-        this.instruccionesbin = instruccionesbin;
-    }
-
     public static Dictionary<String, Registro> getRegistros() {
-        return registros;
+        return  bcps.get(0).getRegistros();
     }
 
     public static void setRegistros(Dictionary<String, Registro> registros) {
-        PC.registros = registros;
+        bcps.get(0).setRegistros(registros);
     }
+
+    
+    
+    
+
+    /*
+        ejecutarLoad
+        carga el valor del registro indicado al registro AC
+    */
+    public void ejecutarLoad(String registro) {
+        bcps.get(0).getRegistros().get("AC")
+                .setValor(
+                        bcps.get(0).getRegistros().get(registro).getValor());
+    }
+
+    /*
+        ejecutarStore
+        guarda el valor del registro AC en el registro indicado
+    */
+    public void ejecutarStore(String registro) {
+        int valorAC = bcps.get(0).getRegistros().get("AC").getValor();
+        bcps.get(0).getRegistros().get(registro).setValor(valorAC);
+    }
+    
+    /*
+        ejecutarMov
+        carga el valor del registro x al registro destino
+    */
+    public void ejecutarMovRegistro(String registroDestino, String registroX) {
+        int valor = bcps.get(0).getRegistros().get(registroX).getValor();
+        bcps.get(0).getRegistros().get(registroDestino).setValor(valor);
+    }
+    
     
     /*
         ejecutarMov
@@ -65,26 +132,18 @@ public class PC {
     */
     public void ejecutarMov(String registro, String valorBin) {
         int valor = Asistente.getDecimal(valorBin);
-        registros.get(registro).setValor(valor);
+        bcps.get(0).getRegistros().get(registro).setValor(valor);
     }
-
-    /*
-        ejecutarLoad
-        carga el valor del registro indicado al registro AC
-    */
-    public void ejecutarLoad(String registro) {
-        registros.get("AC").setValor(registros.get(registro).getValor());
-    }
-
+    
     /*
         ejecutarAdd
         suma el valor del registro indicado al registro ac
     */
     public void ejecutarAdd(String registro) {
-        int valorAC = registros.get("AC").getValor();
-        int valorReg = registros.get(registro).getValor();
+        int valorAC = bcps.get(0).getRegistros().get("AC").getValor();
+        int valorReg = bcps.get(0).getRegistros().get(registro).getValor();
         int nuevoValor = valorAC + valorReg;
-        registros.get("AC").setValor(nuevoValor);
+        bcps.get(0).getRegistros().get("AC").setValor(nuevoValor);
     }
 
     /*
@@ -92,45 +151,38 @@ public class PC {
         resta el valor del registro indicado al registro ac
     */
     public void ejecutarSub(String registro) {
-        int valorAC = registros.get("AC").getValor();
-        int valorReg = registros.get(registro).getValor();
+        int valorAC = bcps.get(0).getRegistros().get("AC").getValor();
+        int valorReg = bcps.get(0).getRegistros().get(registro).getValor();
         int nuevoValor = valorAC - valorReg;
-        registros.get("AC").setValor(nuevoValor);
+        bcps.get(0).getRegistros().get("AC").setValor(nuevoValor);
     }
     
-    /*
-        ejecutarStore
-        guarda el valor del registro AC en el registro indicado
-    */
-    public void ejecutarStore(String registro) {
-        int valorAC = registros.get("AC").getValor();
-        registros.get(registro).setValor(valorAC);
-    }
+    
     
     /*
     Incrementa en 1 el valor del AC
     */
     public void ejecutarINC() {
-        int valorAC = registros.get("AC").getValor();
+        int valorAC = bcps.get(0).getRegistros().get("AC").getValor();
         int nuevoValor = valorAC + 1;
-        registros.get("AC").setValor(nuevoValor);
+        bcps.get(0).getRegistros().get("AC").setValor(nuevoValor);
     }
     /*
     INC AX
     Incrementa en 1 el valor ubicadoen el registro 
     */
     public void ejecutarINCRegistro(String registro) {
-        int valorReg = registros.get(registro).getValor();
+        int valorReg = bcps.get(0).getRegistros().get(registro).getValor();
         int nuevoValor =valorReg + 1;
-        registros.get(registro).setValor(nuevoValor);
+        bcps.get(0).getRegistros().get(registro).setValor(nuevoValor);
     }
     /*
     Decrementa en 1 el valor del AC
     */
     public void ejecutarDEC() {
-        int valorAC = registros.get("AC").getValor();
+        int valorAC = bcps.get(0).getRegistros().get("AC").getValor();
         int nuevoValor = valorAC - 1;
-        registros.get("AC").setValor(nuevoValor);
+        bcps.get(0).getRegistros().get("AC").setValor(nuevoValor);
     }
     
     /*
@@ -138,9 +190,9 @@ public class PC {
     Decrementa en 1 el valor ubicado en el registro 
     */
     public void ejecutarDECRegistro(String registro) {
-        int valorReg = registros.get(registro).getValor();
+        int valorReg = bcps.get(0).getRegistros().get(registro).getValor();
         int nuevoValor =valorReg - 1;
-        registros.get(registro).setValor(nuevoValor); 
+        bcps.get(0).getRegistros().get(registro).setValor(nuevoValor); 
     }
     
     /*
@@ -148,10 +200,10 @@ public class PC {
     Intercambian los valores entre los registros 
     */
     public void ejecutarSwap(String registro1,String registro2) {
-        int valorReg1 = registros.get(registro1).getValor();
-        int valorReg2 = registros.get(registro2).getValor();
-        registros.get(registro1).setValor(valorReg2); 
-        registros.get(registro2).setValor(valorReg1); 
+        int valorReg1 = bcps.get(0).getRegistros().get(registro1).getValor();
+        int valorReg2 = bcps.get(0).getRegistros().get(registro2).getValor();
+        bcps.get(0).getRegistros().get(registro1).setValor(valorReg2); 
+        bcps.get(0).getRegistros().get(registro2).setValor(valorReg1); 
     }
     
     /*
@@ -167,7 +219,7 @@ public class PC {
     Imprime en pantalla el valor del DX 
     */
     public int ejecutarINT10H() {
-        int valorReg = registros.get("DX").getValor();
+        int valorReg = bcps.get(0).getRegistros().get("DX").getValor();
         return valorReg ; 
     }
     
@@ -195,8 +247,8 @@ public class PC {
     Tanto Reg1o Reg2 son registros 
     */
     public boolean ejecutarCMP(String registro1,String registro2) {
-        int valorReg1 = registros.get(registro1).getValor();
-        int valorReg2 = registros.get(registro2).getValor();
+        int valorReg1 = bcps.get(0).getRegistros().get(registro1).getValor();
+        int valorReg2 = bcps.get(0).getRegistros().get(registro2).getValor();
         return valorReg1==valorReg2;
     }
     /*
@@ -205,7 +257,7 @@ public class PC {
     Tomar en cuenta el desbordamiento. 
     */
     public boolean ejecutarJE(String registro,int valor) {
-        int valorReg = registros.get(registro).getValor();
+        int valorReg = bcps.get(0).getRegistros().get(registro).getValor();
         return valorReg==valor; 
     }
     /*
@@ -214,7 +266,7 @@ public class PC {
     Tomar en cuenta el desbordamiento. 
     */
     public boolean ejecutarJNE(String registro,int valor) {
-        int valorReg = registros.get(registro).getValor();
+        int valorReg = bcps.get(0).getRegistros().get(registro).getValor();
         return valorReg != valor;
     }
     /*
@@ -254,6 +306,44 @@ public class PC {
         pero creo que aun no tenemos una pila, nose si la inicializamos aquí 
         o en cargarArchivo.java*/ 
     }
+
+    public ArrayList<Object> getMemoria() {
+        return memoria;
+    }
+
+    public void setMemoria(ArrayList<Object> memoria) {
+        this.memoria = memoria;
+    }
+
+    public ArrayList<Object> getDisco() {
+        return disco;
+    }
+
+    public void setDisco(ArrayList<Object> disco) {
+        this.disco = disco;
+    }
+
+    public int getEspacioMemoria() {
+        return espacioMemoria;
+    }
+
+    public void setEspacioMemoria(int espacioMemoria) {
+        this.espacioMemoria = espacioMemoria;
+    }
+
+    public int getEspacioDisco() {
+        return espacioDisco;
+    }
+
+    public void setEspacioDisco(int espacioDisco) {
+        this.espacioDisco = espacioDisco;
+    }
+    
+    
+    
+    
+    
+    
     
     
 } 
