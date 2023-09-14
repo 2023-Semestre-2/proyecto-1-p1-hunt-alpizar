@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -28,12 +29,12 @@ import javax.swing.JTextField;
  */
 public class cargarArchivo extends javax.swing.JFrame {
 
-    File[] archivos;
+    private static File[] archivos;
     boolean archivoValido = false;
     ArrayList<String[]> espaciosMemoria = new ArrayList<>(100);
-    PC miPC;
-    int posIni;
-    int posActual;
+    private static PC miPC;
+    int posIniReservada, posIni;
+    int posActualReservada, posActual;
     
     
     /*
@@ -46,6 +47,16 @@ public class cargarArchivo extends javax.swing.JFrame {
         
         inicializarTablas(miPC.getEspacioMemoria(), miPC.getEspacioDisco());
         
+        
+        
+    }
+
+    public static PC getMiPC() {
+        return miPC;
+    }
+
+    public static void setArchivos(File[] pArchivos) {
+        archivos = pArchivos;
     }
 
     
@@ -389,7 +400,7 @@ public class cargarArchivo extends javax.swing.JFrame {
                 {null, null}
             },
             new String [] {
-                "", "asm"
+                "", "Memoria"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -416,119 +427,120 @@ public class cargarArchivo extends javax.swing.JFrame {
         tablaProcesos.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         tablaProcesos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {"", null},
-                {"", null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {"", null, null},
+                {"", null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
             },
             new String [] {
-                "", "asm"
+                "", "Nombre", "Estado"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false
+                false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
+        tablaProcesos.setColumnSelectionAllowed(true);
         tablaProcesos.setRowHeight(30);
         tablaProcesos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         tablaProcesos.getTableHeader().setReorderingAllowed(false);
@@ -539,6 +551,7 @@ public class cargarArchivo extends javax.swing.JFrame {
             tablaProcesos.getColumnModel().getColumn(0).setPreferredWidth(40);
             tablaProcesos.getColumnModel().getColumn(0).setMaxWidth(40);
             tablaProcesos.getColumnModel().getColumn(1).setResizable(false);
+            tablaProcesos.getColumnModel().getColumn(2).setResizable(false);
         }
 
         tablaDisco.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
@@ -646,7 +659,7 @@ public class cargarArchivo extends javax.swing.JFrame {
                 {null, null}
             },
             new String [] {
-                "", "asm"
+                "", "Disco"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -657,6 +670,7 @@ public class cargarArchivo extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tablaDisco.setColumnSelectionAllowed(true);
         tablaDisco.setRowHeight(30);
         tablaDisco.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         tablaDisco.getTableHeader().setReorderingAllowed(false);
@@ -867,8 +881,12 @@ public class cargarArchivo extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     //Crea un dialogo con el mensaje indicado
-    public static void mostrarError(String mensaje){
+    //id = identificador de error
+        // 1 = error de memoria
+    public static void mostrarError(int id, String mensaje){
         JOptionPane.showMessageDialog(null, mensaje);
+        if(id == 1) System.exit(0);
+
        
     }
     
@@ -994,23 +1012,62 @@ public class cargarArchivo extends javax.swing.JFrame {
         chooser.setMultiSelectionEnabled(true);
         chooser.showOpenDialog(cargarArchivo);
         archivos = chooser.getSelectedFiles();
-        for(File archivo : archivos){
+        for (File archivo : archivos) {
             System.out.println(archivo.getName());
         }
-        //String nombreArchivo = archivo.getAbsolutePath();
-
-       /* try {
-            miPC.setInstruccionesASM(Asistente.validarArchivo(nombreArchivo));
-            if(miPC.getInstruccionesASM() == null){
-                archivoValido = true;
+        try {
+            ArrayList<ArrayList<String[]>> archivosValidados = Asistente.validarArchivos(archivos);
+            if(archivosValidados != null){
+                cargarEnDisco(archivosValidados);
             }
+            
+
         } catch (IOException ex) {
             Logger.getLogger(cargarArchivo.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
+        }
     }//GEN-LAST:event_cargarArchivoActionPerformed
 
+    public void cargarEnDisco(ArrayList<ArrayList<String[]>> archivosValidados ){
+        
+            posIni = archivos.length + 10;
+            posActual = posIni;
+            posIniReservada = 0;
+            posActualReservada = 0;
+            System.out.println(archivosValidados.size());
+            int i = 0;
+            for (ArrayList<String[]> archivo : archivosValidados) {
+                System.out.println(archivos[i].getName());
+                System.out.println(Arrays.deepToString(archivo.toArray()));
+                System.out.println("Cantidad de archivos: " + archivos.length);
+                String temp = archivos[i].getName() + "," + Integer.toString(posActual) + ", " + Integer.toString(posActual + archivo.size());
+                tablaDisco.setValueAt(temp, posActualReservada, 1);
+                posActualReservada++;
+
+                for (String[] instruccion : archivo) {
+                    String strInstruccion = instruccion[0];
+                    if (instruccion.length > 1) {
+                        strInstruccion += " ";
+                        for (int j = 1; j < instruccion.length; j++) {
+                            strInstruccion += instruccion[j] + ", ";
+                        }
+                        strInstruccion = strInstruccion.substring(0, strInstruccion.length() - 2);
+                    }
+
+                    tablaDisco.setValueAt(strInstruccion, posActual, 1);
+                    posActual++;
+
+                }
+
+                //posActual += archivo.size()+1;
+                i++;
+
+            }
+            
+    }
+    
     private void botEstadisticasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botEstadisticasActionPerformed
         // TODO add your handling code here:
+        System.out.println(tablaDisco.getValueAt(0, 1));
     }//GEN-LAST:event_botEstadisticasActionPerformed
 
     private void dxInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dxInputActionPerformed

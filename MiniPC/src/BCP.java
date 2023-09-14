@@ -14,11 +14,12 @@ import java.util.Hashtable;
  * @author jeanp
  */
 public class BCP {
-    private  String estado;
+    private  String estado;//nuevo, preparado, ejecución, en espera, finalizado
     private int PC;
     private int cpuActual;
     private Date tiempoInicio;
     private Date tiempoEmpleado;
+    private String estadoES;
     private int base;
     private int alcance; //cantidad de lineas de codigo
     private String prioridad;

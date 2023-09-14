@@ -1,5 +1,6 @@
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -22,10 +23,12 @@ import java.util.Random;
 public class Asistente {
     
     static final String[] REGISTROSVALIDOS = {"AX", "BX", "CX", "DX"};
-    static final String[] OPERADORESVALIDO = {"MOV", "LOAD", "ADD", "SUB", "STORE","INC","DEC",
-                                              "SWAP", "INT 20H", "INT 10H", "INT 09H", "JMP" ,
-                                              "CMP","JE","JNE","PARAM","PUSH", "POP"};
-    static Dictionary<String, String> binarios;
+    static final String[] OPERADORESVALIDO = {"LOAD", "STORE", "MOV", "ADD", "SUB", "INC", "DEC",
+        "SWAP", "INT", "JMP", "CMP", "JE", "JNE", "PARAM", "PUSH", "POP"
+    };
+    static final String[] INTERRUPCIONESVALIDAS = {"20H", "10H", "09H"};
+    
+    /*static Dictionary<String, String> binarios;
     static{
         binarios= new Hashtable<>();
         binarios.put("LOAD", "0001");
@@ -37,21 +40,58 @@ public class Asistente {
         binarios.put("BX","0010");
         binarios.put("CX","0011");
         binarios.put("DX","0100");
+    }*/
+    private static int espacioUtilizadoDisco = 0;
+    
+    public static ArrayList<ArrayList<String[]>> validarArchivos(File[] listaArchivos) throws IOException{
+        if(listaArchivos.length > cargarArchivo.getMiPC().getEspacioDisco() * (0.2)){ //se compara la cantidad de archivos con el 20% del tamaño del disco (reservado)
+            cargarArchivo.mostrarError(0, "Espacio reservado en disco es insuficiente" );
+        }
+        
+        ArrayList<ArrayList<String[]>> archivosValidados = new ArrayList<ArrayList<String[]>>();
+        int contArchivos = 0;
+        for(File i : listaArchivos){
+            ArrayList<String[]> archivoTransformado =  validarArchivo(i.getAbsolutePath());
+            
+            if(archivoTransformado == null){
+                
+                if (contArchivos >= 0 && contArchivos < listaArchivos.length) {
+                    File[] temp = new File[listaArchivos.length - 1];
+                    System.arraycopy(listaArchivos, 0, temp, 0, contArchivos);
+                    System.arraycopy(listaArchivos, contArchivos + 1, temp, contArchivos, listaArchivos.length - contArchivos - 1);
+                    listaArchivos = temp;
+                    cargarArchivo.setArchivos(listaArchivos);
+                    System.out.println("Archivo elimindao");
+                } 
+             
+            }else{
+                archivosValidados.add(archivoTransformado);
+                contArchivos++;
+            }
+            
+        }
+        System.out.println(archivosValidados.size());
+        return archivosValidados;
     }
+    
+    
     /*
         valida que el archvo con la ruta señalada cumpla con las caracteristicas
         del lenguaje asm
     */
     public static ArrayList<String[]> validarArchivo(String nombre) throws IOException{
+        System.out.println("Validando el archivo: " + nombre);
         ArrayList<String[]> lista = convertirArchivoLista(nombre);
+        System.out.println(Arrays.deepToString(lista.toArray()));
+        int noReservadoDisco = (int) (cargarArchivo.getMiPC().getEspacioDisco() * (0.8));//espacio disponible para programas
         if(lista!= null && validarLista(lista)){
             int tamanioLista =  Arrays.asList(lista.toArray()).size();
-            if(tamanioLista > 90){
-                cargarArchivo.mostrarError("El archivo no puede exceder las 90 instrucciones");
+            if( espacioUtilizadoDisco  + tamanioLista > noReservadoDisco){
+                cargarArchivo.mostrarError(0,"No existe sufieciente espacio en memora para almacenar " + nombre);
                 return null;
             }
         }else{
-            cargarArchivo.mostrarError("El archivo seleccionado no es valido");
+            cargarArchivo.mostrarError(0,"El archivo: " + nombre + " no es valido");
             return null;
         }
         return lista;
@@ -64,16 +104,61 @@ public class Asistente {
     */
     public static boolean validarLista(ArrayList<String[]> lista){
         int tamanioLista = Arrays.asList(lista).size();
-        if(tamanioLista>90 || tamanioLista<1) return false;
+        if(tamanioLista>cargarArchivo.getMiPC().getEspacioDisco() * (0.8) || tamanioLista<1) return false;
         for(String [] str : lista){
-            boolean operadorValido = (Arrays.asList(OPERADORESVALIDO).contains(str[0]));
-            boolean registroValido = (Arrays.asList(REGISTROSVALIDOS).contains(str[1]));
-            boolean esEntero = true;
-            if(str.length == 3){
-                esEntero = esEntero(str[2]);
-                if(Integer.parseInt(str[2])>127) return false;
+            boolean pos1Valida = (Arrays.asList(OPERADORESVALIDO).contains(str[0]));
+            boolean pos2Valida = true;
+            boolean pos3Valida = true;
+            System.out.println(str[0]);
+            
+            if("PARAM".equals(str[0])  ){
+                if(str.length <=4 && str.length >=2 ){
+                    System.out.println(str.length);
+                    boolean parametrosValido = true;
+                    for(int i = 1; i < str.length; i++){
+                        parametrosValido = esEntero(str[i]);
+                        if(!parametrosValido) break;
+
+                        System.out.println(esEntero(str[i]));
+                        System.out.println("\n");
+                    }
+                    pos3Valida = parametrosValido;
+                }else pos3Valida = false;
+              
+            }else{
+
+                if(str.length == 1){
+                    if("INC".equals(str[0]) ||str[0] == "DEC") pos1Valida = true;
+                    else pos1Valida = false;
+                }
+                else if(str.length == 2){
+                    if(str[0] == "INT"){
+                        pos2Valida = (Arrays.asList(INTERRUPCIONESVALIDAS).contains(str[1]));
+                    }
+                    else if("JE".equals(str[0]) || "JNE".equals(str[0])|| "JMP".equals(str[0])){
+                        pos2Valida = esEntero(str[1]);
+                    }else{
+                        pos2Valida = (Arrays.asList(REGISTROSVALIDOS).contains(str[1]));
+                    }
+
+                }
+                
+                if(str.length == 3){
+                    pos2Valida = (Arrays.asList(REGISTROSVALIDOS).contains(str[1]));
+                    if("CMP".equals(str[0]) || "SWAP".equals(str[0])  ){
+                        pos3Valida = (Arrays.asList(REGISTROSVALIDOS).contains(str[2]));
+                    }else{
+                        if("MOV".equals(str[0])){
+                            System.out.println("estoyu en mov: " + str[2]);
+                            pos3Valida = (esEntero(str[2])) || (Arrays.asList(REGISTROSVALIDOS).contains(str[2])) ; 
+                        }
+                       //if(Integer.parseInt(str[2])>127) return false;
+                    }
+
+
+                }
             }
-            if(!(operadorValido && registroValido && esEntero )){
+            if(!(pos1Valida && pos2Valida && pos3Valida )){
                 return false;
             }
             
@@ -90,7 +175,7 @@ public class Asistente {
         return false;
     }
     try {
-        int num = Integer.parseInt(strNum);
+        Integer.parseInt(strNum);
     } catch (NumberFormatException nfe) {
         return false;
     }
@@ -131,19 +216,26 @@ public class Asistente {
     //retorna nulo sino 
     public static String[] divideString(String input) {
         String[] dividido = null;
-        String[] lista = input.split(",");
-        if (lista.length == 2) {
+        String[] lista = input.split("[,\\s]+",-1);
+        System.out.println("Entrada: "+Arrays.asList(lista));
+        dividido = lista;
+        int indice = 0;
+        for(String str : dividido){
+            dividido[indice] = str.toUpperCase();
+            indice++;
+        }
+       
+        /*if (lista.length == 2 ) {
+            System.out.println(lista[1] == null);
             dividido = new String[3];
             String valor = lista[1].trim();
             String operadorYRegistro = lista[0].trim();    
-            String[] res = divideStringAux(operadorYRegistro);//dividir primer elemento
-            if(res != null){
-                dividido[0] = res[0].toUpperCase();
-                dividido[1] = res[1].toUpperCase();
-                dividido[2] = valor; // Value
-            }else{
-                dividido = null;
-            }
+            //String[] res = divideStringAux(operadorYRegistro);//dividir primer elemento
+            //if(res != null){
+                dividido[0] = lista[0].toUpperCase();
+                dividido[1] = lista[1].toUpperCase();
+                dividido[2] = lista[2]; // Value
+            
         }
         else if(lista.length == 1){
             dividido = new String[2];
@@ -156,8 +248,11 @@ public class Asistente {
                 dividido = null;
             }
         }
-        else dividido = null;
-        
+        else{
+            dividido = null;
+            
+        }*/
+        System.out.println("salida: "+Arrays.asList(dividido));
         return dividido;
     }
     
@@ -197,7 +292,7 @@ public class Asistente {
         TransformarBinario
         transforma la lista de instrucciones de ensamblador a binario
     */
-    public static ArrayList<String[]> transformarBinario(ArrayList<String[]> instruccionesASM){
+   /* public static ArrayList<String[]> transformarBinario(ArrayList<String[]> instruccionesASM){
         ArrayList<String[]> listaBinario = new ArrayList<>();
         for(String[] str : instruccionesASM){
             String[] temp = new String[3];
@@ -213,7 +308,7 @@ public class Asistente {
             listaBinario.add(temp);
         }
         return listaBinario;
-    }
+    }*/
     
     /*
         numeroABinario

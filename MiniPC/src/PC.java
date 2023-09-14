@@ -20,11 +20,11 @@ import javax.swing.table.TableModel;
 public class PC {
     private static ArrayList<BCP> bcps;
     private ArrayList<String[]> instruccionesASM;
-    private int[] parametros = new int[3];
+    private int[] parametros = new int[5];
     private int espacioMemoria;
-    ArrayList<Object> memoria;
+    private ArrayList<Object> memoria;
     private int espacioDisco;
-    ArrayList<Object> disco;
+    private ArrayList<Object> disco;
 
     public PC() {
         inicializarAlmacenamiento();
@@ -48,10 +48,17 @@ public class PC {
       
            String[] infoMemoria = array[0].split(":");
            espacioMemoria = Integer.parseInt(infoMemoria[1]);
+           if(espacioMemoria < 256){
+               cargarArchivo.mostrarError(1, "El tamaño de la memoria no puede ser menor a 256");
+               return;
+           }
            
            String[] infoDisco = array[1].split(":");
            espacioDisco = Integer.parseInt(infoDisco[1]);
-           
+           if(espacioDisco < 512){
+               cargarArchivo.mostrarError(1,"El tamaño del disco  no puede ser menor a 512");
+               return;
+           }
            System.out.println(espacioMemoria);
            System.out.println(espacioDisco);
            memoria = new ArrayList<Object>(espacioMemoria);
