@@ -34,7 +34,6 @@ public class BCP {
         registros.put("AC", new Registro("AC"));
         registros.put("PC", new Registro("PC"));
         registros.put("IR", new Registro("IR"));
-        
     }
     
     public static Dictionary<String, Registro> getRegistros() {
@@ -43,6 +42,86 @@ public class BCP {
 
     public static void setRegistros(Dictionary<String, Registro> registros) {
         BCP.registros = registros;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public int getPC() {
+        return PC;
+    }
+
+    public void setPC(int PC) {
+        this.PC = PC;
+    }
+
+    public int getCpuActual() {
+        return cpuActual;
+    }
+
+    public void setCpuActual(int cpuActual) {
+        this.cpuActual = cpuActual;
+    }
+
+    public Date getTiempoInicio() {
+        return tiempoInicio;
+    }
+
+    public void setTiempoInicio(Date tiempoInicio) {
+        this.tiempoInicio = tiempoInicio;
+    }
+
+    public Date getTiempoEmpleado() {
+        return tiempoEmpleado;
+    }
+
+    public void setTiempoEmpleado(Date tiempoEmpleado) {
+        this.tiempoEmpleado = tiempoEmpleado;
+    }
+
+    public String getEstadoES() {
+        return estadoES;
+    }
+
+    public void setEstadoES(String estadoES) {
+        this.estadoES = estadoES;
+    }
+
+    public int getBase() {
+        return base;
+    }
+
+    public void setBase(int base) {
+        this.base = base;
+    }
+
+    public int getAlcance() {
+        return alcance;
+    }
+
+    public void setAlcance(int alcance) {
+        this.alcance = alcance;
+    }
+
+    public String getPrioridad() {
+        return prioridad;
+    }
+
+    public void setPrioridad(String prioridad) {
+        this.prioridad = prioridad;
+    }
+
+    public ArrayList<Integer> getPila() {
+        return pila;
+    }
+
+    public void setPila(ArrayList<Integer> pila) {
+        this.pila = pila;
     }
     
 }

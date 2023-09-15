@@ -1019,6 +1019,8 @@ public class cargarArchivo extends javax.swing.JFrame {
             ArrayList<ArrayList<String[]>> archivosValidados = Asistente.validarArchivos(archivos);
             if(archivosValidados != null){
                 cargarEnDisco(archivosValidados);
+                crearBCP(archivosValidados);
+                
             }
             
 
@@ -1060,9 +1062,34 @@ public class cargarArchivo extends javax.swing.JFrame {
 
                 //posActual += archivo.size()+1;
                 i++;
+            }   
+    }
+    
+    public void crearBCP(ArrayList<ArrayList<String[]>> archivosValidados){
+        ArrayList<BCP> listaBCP;
+        String estado= "Nuevo";
+        posIni = archivos.length + 10;
+        posActual = posIni;
+        posIniReservada = 0;
+        posActualReservada = 0;
+        int i=0;
+        for(ArrayList<String[]> archivo : archivosValidados){
+            BCP bcp = new BCP();
+            //System.out.println("Archivo: " +archivo);
+            System.out.println(archivos[i].getName());
+            for (String[] instruccion : archivo) {
+                String strInstruccion = instruccion[0];
+                System.out.println("Archivo; "+Arrays.deepToString(instruccion));
+                
+       
+            tablaMemoria.setValueAt(strInstruccion, posActual, 1);
+            posActual++;
 
             }
+            i++;
             
+        }
+   
     }
     
     private void botEstadisticasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botEstadisticasActionPerformed
