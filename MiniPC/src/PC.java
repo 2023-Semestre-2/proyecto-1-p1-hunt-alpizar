@@ -1,13 +1,10 @@
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -18,7 +15,7 @@ import javax.swing.table.TableModel;
  * @author jeanp
  */
 public class PC {
-    private static ArrayList<BCP> bcps;
+    private static ArrayList<BCP> bcps = new ArrayList<BCP>();
     private ArrayList<String[]> instruccionesASM;
     private int[] parametros = new int[5];
     private int espacioMemoria;
@@ -345,8 +342,26 @@ public class PC {
     public void setEspacioDisco(int espacioDisco) {
         this.espacioDisco = espacioDisco;
     }
+
+    public static ArrayList<BCP> getBcps() {
+        return bcps;
+    }
+
+    public static void setBcps(ArrayList<BCP> bcps) {
+        PC.bcps = bcps;
+    }
     
+    public static void addBCP(BCP nuevo){
+        PC.bcps.add(nuevo);
+    }
     
+    public static BCP getBCPat(int indice){
+        return PC.bcps.get(indice);
+    }
+    
+    public static void setBCPat(int indice, BCP nuevo){
+        PC.bcps.set(indice, nuevo);
+    }
     
     
     

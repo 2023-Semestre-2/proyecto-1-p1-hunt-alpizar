@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -35,7 +36,8 @@ public class cargarArchivo extends javax.swing.JFrame {
     private static PC miPC;
     int posIniReservada, posIni;
     int posActualReservada, posActual;
-    
+    int direccionMemoriaReservada=0;
+    int direccionMemoriaNormal = 75;
     
     /*
      * Crea una ventana que permite escoger un archivo
@@ -1018,8 +1020,12 @@ public class cargarArchivo extends javax.swing.JFrame {
         try {
             ArrayList<ArrayList<String[]>> archivosValidados = Asistente.validarArchivos(archivos);
             if(archivosValidados != null){
-                cargarEnDisco(archivosValidados);
-                crearBCP(archivosValidados);
+                try {
+                    cargarEnDisco(archivosValidados);
+                    inicializarMemoria();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(cargarArchivo.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 
             }
             
@@ -1029,7 +1035,103 @@ public class cargarArchivo extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_cargarArchivoActionPerformed
 
-    public void cargarEnDisco(ArrayList<ArrayList<String[]>> archivosValidados ){
+    public void inicializarMemoria(){
+        int cantProcesosEjecutar = 5;
+        
+        for(int proceso =0; proceso <5 && proceso < archivos.length; proceso++){
+            
+            BCP actual = miPC.getBCPat(proceso);
+            actual.setSiguienteBPC(direccionMemoriaReservada+16);
+            String idProceso = actual.getIdentificador();
+            tablaMemoria.setValueAt("identificador: "+idProceso, direccionMemoriaReservada, 1);
+            direccionMemoriaReservada++;
+            tablaMemoria.setValueAt("estado "+idProceso+": "+actual.getEstado(), direccionMemoriaReservada, 1);
+            direccionMemoriaReservada++;
+            
+            String[] archivoActual = getArchivoFromDisco(idProceso);
+            actual.setPC(direccionMemoriaNormal);
+            for(String instruccion : archivoActual){
+                tablaMemoria.setValueAt(instruccion ,direccionMemoriaNormal, 1);
+                direccionMemoriaNormal++;
+            }
+            tablaMemoria.setValueAt("Contador (PC) "+idProceso+": "+actual.getPC(), direccionMemoriaReservada, 1);
+            direccionMemoriaReservada++;
+            
+            tablaMemoria.setValueAt("Pila 0 "+idProceso+": "+actual.getPila().get(0), direccionMemoriaReservada, 1);
+            direccionMemoriaReservada++;
+            tablaMemoria.setValueAt("Pila 1 "+idProceso+": "+actual.getPila().get(1), direccionMemoriaReservada, 1);
+            direccionMemoriaReservada++;
+            tablaMemoria.setValueAt("Pila 2 "+idProceso+": "+actual.getPila().get(2), direccionMemoriaReservada, 1);
+            direccionMemoriaReservada++;
+            tablaMemoria.setValueAt("Pila 3 "+idProceso+": "+actual.getPila().get(3), direccionMemoriaReservada, 1);
+            direccionMemoriaReservada++;
+            tablaMemoria.setValueAt("Pila 4 "+idProceso+": "+actual.getPila().get(4), direccionMemoriaReservada, 1);
+            direccionMemoriaReservada++;
+            
+            tablaMemoria.setValueAt("Cpu actual "+idProceso+": "+actual.getCpuActual() , direccionMemoriaReservada, 1);
+            direccionMemoriaReservada++;
+            
+            tablaMemoria.setValueAt("inicio "+idProceso+": "+actual.getTiempoInicio(), direccionMemoriaReservada, 1);
+            direccionMemoriaReservada++;
+            tablaMemoria.setValueAt("empleado "+idProceso+": "+actual.getTiempoEmpleado(), direccionMemoriaReservada, 1);
+            direccionMemoriaReservada++;
+            
+            tablaMemoria.setValueAt("Estado interrupcion  "+idProceso+": "+actual.getEstadoInterrupcion(), direccionMemoriaReservada, 1);
+            direccionMemoriaReservada++;
+            
+            
+            tablaMemoria.setValueAt("siguiente BCP  "+idProceso+": "+actual.getSiguienteBPC(), direccionMemoriaReservada, 1);
+            direccionMemoriaReservada++;
+            
+            actual.setBase(actual.getPC());
+            tablaMemoria.setValueAt("Base  "+idProceso+": "+actual.getBase(), direccionMemoriaReservada, 1);
+            direccionMemoriaReservada++;
+            
+            actual.setAlcance(archivoActual.length);
+            tablaMemoria.setValueAt("Alcance  "+idProceso+": "+actual.getAlcance(), direccionMemoriaReservada, 1);
+            direccionMemoriaReservada++;
+            
+            tablaMemoria.setValueAt("Prioridad  "+idProceso+": "+actual.getPrioridad(), direccionMemoriaReservada, 1);
+            direccionMemoriaReservada++;
+            
+            miPC.setBCPat(proceso, actual);
+            
+        }
+    }
+    
+    public String[] getArchivoFromDisco(String idProceso) {
+        System.out.println("getArchivoFromDisco");
+        for(int i = 0;i< posActualReservada;i++){
+            String[] valorFila = tablaDisco.getValueAt(i, 1).toString().split(",");
+         
+            String idArchivo =valorFila[0];
+            int inicioArchivo = Integer.parseInt(valorFila[1].trim());
+            int finArchivo = Integer.parseInt(valorFila[2].trim());
+            System.out.println(valorFila[0]);
+            System.out.println(inicioArchivo);
+            System.out.println(finArchivo);
+            
+             
+            if(idProceso.equals(valorFila[0])){
+                String[] archivo = new String[finArchivo-inicioArchivo+1];
+                int cont = 0;
+                for(int j = inicioArchivo; j<=finArchivo;j++){
+                    String instruccionString = tablaDisco.getValueAt(j, 1).toString();
+                    System.out.println(instruccionString);
+                    archivo[cont] = instruccionString;
+                    cont++;
+                }
+                return archivo;
+            }
+            
+        }
+        
+        
+        return null;
+        
+    }
+    
+    public void cargarEnDisco(ArrayList<ArrayList<String[]>> archivosValidados ) throws InterruptedException{
         
             posIni = archivos.length + 10;
             posActual = posIni;
@@ -1041,8 +1143,10 @@ public class cargarArchivo extends javax.swing.JFrame {
                 System.out.println(archivos[i].getName());
                 System.out.println(Arrays.deepToString(archivo.toArray()));
                 System.out.println("Cantidad de archivos: " + archivos.length);
-                String temp = archivos[i].getName() + "," + Integer.toString(posActual) + ", " + Integer.toString(posActual + archivo.size());
+                String temp = archivos[i].getName() + "," + Integer.toString(posActual) + ", " + Integer.toString(posActual + archivo.size()-1);
                 tablaDisco.setValueAt(temp, posActualReservada, 1);
+                
+                crearBCP(archivos[i].getName(),posActualReservada);
                 posActualReservada++;
 
                 for (String[] instruccion : archivo) {
@@ -1054,7 +1158,8 @@ public class cargarArchivo extends javax.swing.JFrame {
                         }
                         strInstruccion = strInstruccion.substring(0, strInstruccion.length() - 2);
                     }
-
+                    
+          
                     tablaDisco.setValueAt(strInstruccion, posActual, 1);
                     posActual++;
 
@@ -1062,34 +1167,18 @@ public class cargarArchivo extends javax.swing.JFrame {
 
                 //posActual += archivo.size()+1;
                 i++;
-            }   
+                //TimeUnit.SECONDS.sleep(1);
+            }  
+            
     }
     
-    public void crearBCP(ArrayList<ArrayList<String[]>> archivosValidados){
-        ArrayList<BCP> listaBCP;
-        String estado= "Nuevo";
-        posIni = archivos.length + 10;
-        posActual = posIni;
-        posIniReservada = 0;
-        posActualReservada = 0;
-        int i=0;
-        for(ArrayList<String[]> archivo : archivosValidados){
-            BCP bcp = new BCP();
-            //System.out.println("Archivo: " +archivo);
-            System.out.println(archivos[i].getName());
-            for (String[] instruccion : archivo) {
-                String strInstruccion = instruccion[0];
-                System.out.println("Archivo; "+Arrays.deepToString(instruccion));
-                
+    public void crearBCP(String nombre, int numeroBCP){
+        BCP bcpNuevo = new BCP(nombre);
+        miPC.addBCP(bcpNuevo);
+        tablaProcesos.setValueAt(numeroBCP, numeroBCP, 0);
+        tablaProcesos.setValueAt(nombre, numeroBCP, 1);
+        tablaProcesos.setValueAt(miPC.getBcps().get(numeroBCP).getEstado(), numeroBCP, 2);
        
-            tablaMemoria.setValueAt(strInstruccion, posActual, 1);
-            posActual++;
-
-            }
-            i++;
-            
-        }
-   
     }
     
     private void botEstadisticasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botEstadisticasActionPerformed
