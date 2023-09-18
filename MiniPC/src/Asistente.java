@@ -128,17 +128,23 @@ public class Asistente {
             }else{
 
                 if(str.length == 1){
-                    if("INC".equals(str[0]) ||str[0] == "DEC") pos1Valida = true;
+                    if("INC".equals(str[0]) ||"DEC".equals(str[0])) pos1Valida = true;
                     else pos1Valida = false;
                 }
                 else if(str.length == 2){
-                    if(str[0] == "INT"){
-                        pos2Valida = (Arrays.asList(INTERRUPCIONESVALIDAS).contains(str[1]));
-                    }
-                    else if("JE".equals(str[0]) || "JNE".equals(str[0])|| "JMP".equals(str[0])){
-                        pos2Valida = esEntero(str[1]);
-                    }else{
-                        pos2Valida = (Arrays.asList(REGISTROSVALIDOS).contains(str[1]));
+                    switch (str[0]) {
+                        case "INT":
+                            System.out.println("Es una interrupcion");
+                            pos2Valida = (Arrays.asList(INTERRUPCIONESVALIDAS).contains(str[1]));
+                            break;
+                        case "JE":
+                        case "JNE":
+                        case "JMP":
+                            pos2Valida = esEntero(str[1]);
+                            break;
+                        default:
+                            pos2Valida = (Arrays.asList(REGISTROSVALIDOS).contains(str[1]));
+                            break;
                     }
 
                 }
@@ -338,5 +344,14 @@ public class Asistente {
             return res * -1;
         }
         return res;
+
     }
+
+    public static String[] getREGISTROSVALIDOS() {
+        return REGISTROSVALIDOS;
+    }
+
+    
 }
+
+

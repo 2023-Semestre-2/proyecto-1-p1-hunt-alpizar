@@ -15,7 +15,8 @@ import javax.swing.table.DefaultTableModel;
  * @author jeanp
  */
 public class PC {
-    private static ArrayList<BCP> bcps = new ArrayList<BCP>();
+    private ArrayList<BCP> bcps = new ArrayList<BCP>();
+    private static BCP bcpActual = new BCP("");
     private ArrayList<String[]> instruccionesASM;
     private int[] parametros = new int[5];
     private int espacioMemoria;
@@ -25,6 +26,7 @@ public class PC {
 
     public PC() {
         inicializarAlmacenamiento();
+        
     }
 
     private void inicializarAlmacenamiento(){
@@ -89,12 +91,12 @@ public class PC {
         this.instruccionesASM = instruccionesASM;
     }
 
-    public static Dictionary<String, Registro> getRegistros() {
-        return  bcps.get(0).getRegistros();
+    public Dictionary<String, Registro> getRegistros() {
+        return  bcpActual.getRegistros();
     }
 
-    public static void setRegistros(Dictionary<String, Registro> registros) {
-        bcps.get(0).setRegistros(registros);
+    public void setRegistros(Dictionary<String, Registro> registros) {
+        bcpActual.setRegistros(registros);
     }
 
     
@@ -106,9 +108,9 @@ public class PC {
         carga el valor del registro indicado al registro AC
     */
     public void ejecutarLoad(String registro) {
-        bcps.get(0).getRegistros().get("AC")
+        bcpActual.getRegistros().get("AC")
                 .setValor(
-                        bcps.get(0).getRegistros().get(registro).getValor());
+                        bcpActual.getRegistros().get(registro).getValor());
     }
 
     /*
@@ -116,8 +118,8 @@ public class PC {
         guarda el valor del registro AC en el registro indicado
     */
     public void ejecutarStore(String registro) {
-        int valorAC = bcps.get(0).getRegistros().get("AC").getValor();
-        bcps.get(0).getRegistros().get(registro).setValor(valorAC);
+        int valorAC = bcpActual.getRegistros().get("AC").getValor();
+        bcpActual.getRegistros().get(registro).setValor(valorAC);
     }
     
     /*
@@ -125,8 +127,8 @@ public class PC {
         carga el valor del registro x al registro destino
     */
     public void ejecutarMovRegistro(String registroDestino, String registroX) {
-        int valor = bcps.get(0).getRegistros().get(registroX).getValor();
-        bcps.get(0).getRegistros().get(registroDestino).setValor(valor);
+        int valor = bcpActual.getRegistros().get(registroX).getValor();
+        bcpActual.getRegistros().get(registroDestino).setValor(valor);
     }
     
     
@@ -134,9 +136,8 @@ public class PC {
         ejecutarMov
         carga el valor  al registro indicado
     */
-    public void ejecutarMov(String registro, String valorBin) {
-        int valor = Asistente.getDecimal(valorBin);
-        bcps.get(0).getRegistros().get(registro).setValor(valor);
+    public void ejecutarMov(String registro, int valor) {
+        bcpActual.getRegistros().get(registro).setValor(valor);
     }
     
     /*
@@ -144,10 +145,10 @@ public class PC {
         suma el valor del registro indicado al registro ac
     */
     public void ejecutarAdd(String registro) {
-        int valorAC = bcps.get(0).getRegistros().get("AC").getValor();
-        int valorReg = bcps.get(0).getRegistros().get(registro).getValor();
+        int valorAC = bcpActual.getRegistros().get("AC").getValor();
+        int valorReg = bcpActual.getRegistros().get(registro).getValor();
         int nuevoValor = valorAC + valorReg;
-        bcps.get(0).getRegistros().get("AC").setValor(nuevoValor);
+        bcpActual.getRegistros().get("AC").setValor(nuevoValor);
     }
 
     /*
@@ -155,10 +156,10 @@ public class PC {
         resta el valor del registro indicado al registro ac
     */
     public void ejecutarSub(String registro) {
-        int valorAC = bcps.get(0).getRegistros().get("AC").getValor();
-        int valorReg = bcps.get(0).getRegistros().get(registro).getValor();
+        int valorAC = bcpActual.getRegistros().get("AC").getValor();
+        int valorReg = bcpActual.getRegistros().get(registro).getValor();
         int nuevoValor = valorAC - valorReg;
-        bcps.get(0).getRegistros().get("AC").setValor(nuevoValor);
+        bcpActual.getRegistros().get("AC").setValor(nuevoValor);
     }
     
     
@@ -167,26 +168,26 @@ public class PC {
     Incrementa en 1 el valor del AC
     */
     public void ejecutarINC() {
-        int valorAC = bcps.get(0).getRegistros().get("AC").getValor();
+        int valorAC = bcpActual.getRegistros().get("AC").getValor();
         int nuevoValor = valorAC + 1;
-        bcps.get(0).getRegistros().get("AC").setValor(nuevoValor);
+        bcpActual.getRegistros().get("AC").setValor(nuevoValor);
     }
     /*
     INC AX
     Incrementa en 1 el valor ubicadoen el registro 
     */
     public void ejecutarINCRegistro(String registro) {
-        int valorReg = bcps.get(0).getRegistros().get(registro).getValor();
+        int valorReg = bcpActual.getRegistros().get(registro).getValor();
         int nuevoValor =valorReg + 1;
-        bcps.get(0).getRegistros().get(registro).setValor(nuevoValor);
+        bcpActual.getRegistros().get(registro).setValor(nuevoValor);
     }
     /*
     Decrementa en 1 el valor del AC
     */
     public void ejecutarDEC() {
-        int valorAC = bcps.get(0).getRegistros().get("AC").getValor();
+        int valorAC = bcpActual.getRegistros().get("AC").getValor();
         int nuevoValor = valorAC - 1;
-        bcps.get(0).getRegistros().get("AC").setValor(nuevoValor);
+        bcpActual.getRegistros().get("AC").setValor(nuevoValor);
     }
     
     /*
@@ -194,9 +195,9 @@ public class PC {
     Decrementa en 1 el valor ubicado en el registro 
     */
     public void ejecutarDECRegistro(String registro) {
-        int valorReg = bcps.get(0).getRegistros().get(registro).getValor();
+        int valorReg = bcpActual.getRegistros().get(registro).getValor();
         int nuevoValor =valorReg - 1;
-        bcps.get(0).getRegistros().get(registro).setValor(nuevoValor); 
+        bcpActual.getRegistros().get(registro).setValor(nuevoValor); 
     }
     
     /*
@@ -204,10 +205,10 @@ public class PC {
     Intercambian los valores entre los registros 
     */
     public void ejecutarSwap(String registro1,String registro2) {
-        int valorReg1 = bcps.get(0).getRegistros().get(registro1).getValor();
-        int valorReg2 = bcps.get(0).getRegistros().get(registro2).getValor();
-        bcps.get(0).getRegistros().get(registro1).setValor(valorReg2); 
-        bcps.get(0).getRegistros().get(registro2).setValor(valorReg1); 
+        int valorReg1 = bcpActual.getRegistros().get(registro1).getValor();
+        int valorReg2 = bcpActual.getRegistros().get(registro2).getValor();
+        bcpActual.getRegistros().get(registro1).setValor(valorReg2); 
+        bcpActual.getRegistros().get(registro2).setValor(valorReg1); 
     }
     
     /*
@@ -223,7 +224,7 @@ public class PC {
     Imprime en pantalla el valor del DX 
     */
     public int ejecutarINT10H() {
-        int valorReg = bcps.get(0).getRegistros().get("DX").getValor();
+        int valorReg = bcpActual.getRegistros().get("DX").getValor();
         return valorReg ; 
     }
     
@@ -250,10 +251,10 @@ public class PC {
     Compara el contenido de Reg1con respecto a Reg2. 
     Tanto Reg1o Reg2 son registros 
     */
-    public boolean ejecutarCMP(String registro1,String registro2) {
-        int valorReg1 = bcps.get(0).getRegistros().get(registro1).getValor();
-        int valorReg2 = bcps.get(0).getRegistros().get(registro2).getValor();
-        return valorReg1==valorReg2;
+    public void ejecutarCMP(String registro1,String registro2) {
+        int valorReg1 = bcpActual.getRegistros().get(registro1).getValor();
+        int valorReg2 = bcpActual.getRegistros().get(registro2).getValor();
+        bcpActual.setComp(valorReg1==valorReg2);
     }
     /*
     JE (si es igual)
@@ -261,7 +262,7 @@ public class PC {
     Tomar en cuenta el desbordamiento. 
     */
     public boolean ejecutarJE(String registro,int valor) {
-        int valorReg = bcps.get(0).getRegistros().get(registro).getValor();
+        int valorReg = bcpActual.getRegistros().get(registro).getValor();
         return valorReg==valor; 
     }
     /*
@@ -270,33 +271,18 @@ public class PC {
     Tomar en cuenta el desbordamiento. 
     */
     public boolean ejecutarJNE(String registro,int valor) {
-        int valorReg = bcps.get(0).getRegistros().get(registro).getValor();
+        int valorReg = bcpActual.getRegistros().get(registro).getValor();
         return valorReg != valor;
     }
-    /*
-    PARAM v1, v2, .. vN 
-
-    Forma de representar los parámetros de entrada. Los 
-    valores v1, v2 .. vn serán numéricos y se guardará en pila. 
-    Máximo 3 parámetros de entrada 
-    */
-    public void ejecutarPARAM(List<Integer> valores) {
-        for (int i = 0; i < 3; i++) {
-            if (i < valores.size()) {
-                this.parametros[i] = valores.get(i);
-            }/*preguntar a Hunt el uso de PARAM*/
-        }
-    }
-    
+   
     /*
     PUSH AX
     
     Guarda en la pila el valor del registro AX 
     */
     public void ejecutarPUSH(String registro) {
-       /*tanto en push y pop podemos usar las mismas funcionalidades de java
-        pero creo que aun no tenemos una pila, nose si la inicializamos aquí 
-        o en cargarArchivo.java*/ 
+       int valor =bcpActual.getRegistros().get(registro).getValor();
+       bcpActual.agregarAPila(valor);
     }
     
     /*
@@ -306,9 +292,8 @@ public class PC {
     entrada, y lo almacena en un registro 
     */
     public void ejecutarPOP(String registro) {
-        /*tanto en push y pop podemos usar las mismas funcionalidades de java
-        pero creo que aun no tenemos una pila, nose si la inicializamos aquí 
-        o en cargarArchivo.java*/ 
+        int valor = bcpActual.eliminarDePila();
+        bcpActual.getRegistros().get(registro).setValor(valor);
     }
 
     public ArrayList<Object> getMemoria() {
@@ -343,24 +328,48 @@ public class PC {
         this.espacioDisco = espacioDisco;
     }
 
-    public static ArrayList<BCP> getBcps() {
+    public ArrayList<BCP> getBcps() {
         return bcps;
     }
 
-    public static void setBcps(ArrayList<BCP> bcps) {
-        PC.bcps = bcps;
+    public void setBcps(ArrayList<BCP> bcps) {
+        bcps = bcps;
     }
     
-    public static void addBCP(BCP nuevo){
-        PC.bcps.add(nuevo);
+    public void addBCP(BCP nuevo){
+        bcps.add(nuevo);
     }
     
-    public static BCP getBCPat(int indice){
-        return PC.bcps.get(indice);
+    public BCP getBCPat(int indice){
+        return bcps.get(indice);
     }
     
-    public static void setBCPat(int indice, BCP nuevo){
-        PC.bcps.set(indice, nuevo);
+    public void setBCPat(int indice, BCP nuevo){
+        bcps.set(indice, nuevo);
+    }
+
+    public BCP getBcpActual() {
+        return PC.bcpActual;
+    }
+
+    public void setBcpActual(BCP bcpActual) {
+        PC.bcpActual = bcpActual;
+    }
+    
+  
+    public boolean siguienteBCP(){
+        
+        int actual = bcps.indexOf(bcpActual);
+        System.out.println("actual: " + actual);
+        if(actual+1 <bcps.size()){
+            setBcpActual(bcps.get(actual+1));
+            bcpActual.setEstado("En ejecución");
+            System.out.println("siguiente: " + bcpActual.getIdentificador());
+            System.out.println("siguiente ax: " + bcpActual.getRegistros().get("AX").getValor());
+            return true;
+        }
+        
+        return false;
     }
     
     

@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.Stack;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -31,34 +32,45 @@ public class BCP {
     private String identificador;
     private  String estado;//nuevo, preparado, ejecución, en espera, finalizado
     private int PC;//ubicación del programa cargado en memoria
-    private ArrayList<Integer> pila = new ArrayList<>(Arrays.asList(null, null, null, null, null));
+    private Stack<Integer> pila = new Stack<Integer>();
+    
+
     private int cpuActual;
     private Date tiempoInicio;
-    private Date tiempoEmpleado;
+    private String tiempoEmpleado = "Por definir";
     private String estadoInterrupcion;
     private int siguienteBPC;//primera linea del siguiente BPC
     private int base;//linea inicio
     private int alcance; //cantidad de lineas de codigo
     private String prioridad;
+    private Boolean comp = null;
     
-    static Dictionary<String, Registro> registros;
-    static{
-        registros= new Hashtable<>();
-        registros.put("AX", new Registro("AX")); //0001
-        registros.put("BX", new Registro("BX"));//0010
-        registros.put("CX", new Registro("CX"));//0011
-        registros.put("DX", new Registro("DX"));//0100
-        registros.put("AC", new Registro("AC"));
-        registros.put("PC", new Registro("PC"));
-        registros.put("IR", new Registro("IR"));
-    }
+    private Dictionary<String, Registro> registros = new Hashtable<>();
 
+   
+    
+   
     public BCP(String identificador) {
+        
+        System.out.println("Cree bcp: "+ identificador );
         this.identificador = identificador;
         this.estado = "nuevo";
         this.estadoInterrupcion = "En espera";
         this.prioridad = "Normal";
         this.cpuActual = 1;
+        this.registros.put("AX", new Registro("AX")); //0001
+        this.registros.put("BX", new Registro("BX"));//0010
+        this.registros.put("CX", new Registro("CX"));//0011
+        this.registros.put("DX", new Registro("DX"));//0100
+        this.registros.put("AC", new Registro("AC"));
+        this.registros.put("PC", new Registro("PC"));
+        this.registros.put("IR", new Registro("IR"));
+        
+        this.pila.push(null);
+        this.pila.push(null);
+        this.pila.push(null);
+        this.pila.push(null);
+        this.pila.push(null);
     }
 
     public String getIdentificador() {
@@ -88,11 +100,11 @@ public class BCP {
         this.PC = PC;
     }
 
-    public ArrayList<Integer> getPila() {
+    public Stack<Integer> getPila() {
         return pila;
     }
 
-    public void setPila(ArrayList<Integer> pila) {
+    public void setPila(Stack<Integer> pila) {
         this.pila = pila;
     }
 
@@ -112,11 +124,11 @@ public class BCP {
         this.tiempoInicio = tiempoInicio;
     }
 
-    public Date getTiempoEmpleado() {
+    public String getTiempoEmpleado() {
         return tiempoEmpleado;
     }
 
-    public void setTiempoEmpleado(Date tiempoEmpleado) {
+    public void setTiempoEmpleado(String tiempoEmpleado) {
         this.tiempoEmpleado = tiempoEmpleado;
     }
 
@@ -160,14 +172,55 @@ public class BCP {
         this.prioridad = prioridad;
     }
 
-    public static Dictionary<String, Registro> getRegistros() {
+    public Dictionary<String, Registro> getRegistros() {
         return registros;
     }
 
-    public static void setRegistros(Dictionary<String, Registro> registros) {
-        BCP.registros = registros;
+    public void setRegistros(Dictionary<String, Registro> registros) {
+        registros = registros;
+    }
+
+    public Boolean getComp() {
+        return comp;
+    }
+
+    public void setComp(Boolean comp) {
+        this.comp = comp;
     }
     
+   public void agregarAPila(int valor){
+       int cantNull = 0;
+       for(Integer item : pila){
+           if (item == null) cantNull +=1;
+           
+       }
+       
+       System.out.println("Cantidad de nulos : "+cantNull);
+       if(cantNull >0){
+           pila.push(valor);
+           pila.remove(0);
+           
+       }else{
+           cargarArchivo.mostrarError(0, "Espacio en pila insuficiente");
+       }
+   }
    
+   public Integer eliminarDePila(){
+       int cantNull = 0;
+       for(Integer item : pila){
+           if (item == null) cantNull +=1;
+           
+       }
+       
+       System.out.println("Cantidad de nulos : "+cantNull);
+        Integer valor = null;
+       if(pila.size()>0){
+           valor = pila.pop();
+           pila.add(0,null);
+       }else{
+           cargarArchivo.mostrarError(0, "Indice fuera de rango para tamaño "+ pila.size());
+       }
+       return valor;
+   }
     
 }
