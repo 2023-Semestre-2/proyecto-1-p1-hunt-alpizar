@@ -18,7 +18,6 @@ public class PC {
     private ArrayList<BCP> bcps = new ArrayList<BCP>();
     private static BCP bcpActual = new BCP("");
     private ArrayList<String[]> instruccionesASM;
-    private int[] parametros = new int[5];
     private int espacioMemoria;
     private ArrayList<Object> memoria;
     private int espacioDisco;
@@ -216,7 +215,7 @@ public class PC {
     Finaliza el programa 
     */
     public void ejecutarINT20H() {
-        /*Aqui podríamos finalizar el programa en cargarArchivo.java*/
+        
     }
     
     /*

@@ -28,19 +28,6 @@ public class Asistente {
     };
     static final String[] INTERRUPCIONESVALIDAS = {"20H", "10H", "09H"};
     
-    /*static Dictionary<String, String> binarios;
-    static{
-        binarios= new Hashtable<>();
-        binarios.put("LOAD", "0001");
-        binarios.put("STORE", "0010");
-        binarios.put("MOV","0011");
-        binarios.put("SUB","0100");
-        binarios.put("ADD","0101");
-        binarios.put("AX","0001");
-        binarios.put("BX","0010");
-        binarios.put("CX","0011");
-        binarios.put("DX","0100");
-    }*/
     private static int espacioUtilizadoDisco = 0;
     
     public static ArrayList<ArrayList<String[]>> validarArchivos(File[] listaArchivos) throws IOException{
@@ -61,9 +48,9 @@ public class Asistente {
                     System.arraycopy(listaArchivos, contArchivos + 1, temp, contArchivos, listaArchivos.length - contArchivos - 1);
                     listaArchivos = temp;
                     cargarArchivo.setArchivos(listaArchivos);
-                    System.out.println("Archivo elimindao");
+                    System.out.println("Archivo eliminado");
                 } 
-             
+            
             }else{
                 archivosValidados.add(archivoTransformado);
                 contArchivos++;
@@ -231,33 +218,7 @@ public class Asistente {
             indice++;
         }
        
-        /*if (lista.length == 2 ) {
-            System.out.println(lista[1] == null);
-            dividido = new String[3];
-            String valor = lista[1].trim();
-            String operadorYRegistro = lista[0].trim();    
-            //String[] res = divideStringAux(operadorYRegistro);//dividir primer elemento
-            //if(res != null){
-                dividido[0] = lista[0].toUpperCase();
-                dividido[1] = lista[1].toUpperCase();
-                dividido[2] = lista[2]; // Value
-            
-        }
-        else if(lista.length == 1){
-            dividido = new String[2];
-            String operadorYRegistro = lista[0].trim();          
-            String[] res = divideStringAux(operadorYRegistro);//dividir primer elemento
-            if(res != null){
-                dividido[0] = res[0].toUpperCase();
-                dividido[1] = res[1].toUpperCase();
-            }else{
-                dividido = null;
-            }
-        }
-        else{
-            dividido = null;
-            
-        }*/
+       
         System.out.println("salida: "+Arrays.asList(dividido));
         return dividido;
     }
@@ -294,32 +255,8 @@ public class Asistente {
         return posicion;
     }
     
-    /*
-        TransformarBinario
-        transforma la lista de instrucciones de ensamblador a binario
-    */
-   /* public static ArrayList<String[]> transformarBinario(ArrayList<String[]> instruccionesASM){
-        ArrayList<String[]> listaBinario = new ArrayList<>();
-        for(String[] str : instruccionesASM){
-            String[] temp = new String[3];
-            temp[0] = binarios.get(str[0].toUpperCase());//verifica que el registro pertenezca a la gramatica
-            temp[1] = binarios.get(str[1].toUpperCase());
-            if(str.length == 3){
-                int numero = Integer.parseInt(str[2]);
-                String numBin = numeroABinario(numero);
-                temp[2] = numBin;
-            }else{
-                temp[2] = "00000000";
-            }
-            listaBinario.add(temp);
-        }
-        return listaBinario;
-    }*/
-    
-    /*
-        numeroABinario
-        transforma de decimal a binario
-    */
+   
+  
     public static String numeroABinario(int numero){
         String binario = Integer.toBinaryString(Math.abs(numero));
         for(int i = 7-binario.length(); i>0; i--){

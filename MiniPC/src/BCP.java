@@ -37,6 +37,7 @@ public class BCP {
 
     private int cpuActual;
     private Date tiempoInicio;
+    private Date tiempoFin;
     private String tiempoEmpleado = "Por definir";
     private String estadoInterrupcion;
     private int siguienteBPC;//primera linea del siguiente BPC
@@ -81,9 +82,6 @@ public class BCP {
         this.identificador = identificador;
     }
 
-    
-    
-    
     public String getEstado() {
         return estado;
     }
@@ -124,6 +122,16 @@ public class BCP {
         this.tiempoInicio = tiempoInicio;
     }
 
+    public Date getTiempoFin() {
+        return tiempoFin;
+    }
+
+    public void setTiempoFin(Date tiempoFin) {
+        this.tiempoFin = tiempoFin;
+    }
+
+    
+    
     public String getTiempoEmpleado() {
         return tiempoEmpleado;
     }
@@ -195,7 +203,6 @@ public class BCP {
            
        }
        
-       System.out.println("Cantidad de nulos : "+cantNull);
        if(cantNull >0){
            pila.push(valor);
            pila.remove(0);
@@ -211,8 +218,7 @@ public class BCP {
            if (item == null) cantNull +=1;
            
        }
-       
-       System.out.println("Cantidad de nulos : "+cantNull);
+
         Integer valor = null;
        if(pila.size()>0){
            valor = pila.pop();

@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -48,9 +49,10 @@ public class cargarArchivo extends javax.swing.JFrame {
     int direccionMemoriaReservada=0;
     int direccionMemoriaNormal = 21*5;
     
-    
-    int instruccionActual;
+    estadisticas fEstadisticas = new estadisticas();
+    int instruccionActual;//ir
     int pesoEjecutado = 0;
+    int indiceMemoriaBcpActual = 0;
     int cantProcesosEjecutados = 0 ;
     boolean terminarEjecucion = false;
     static Dictionary<String, Integer> pesosInstruccion;
@@ -79,15 +81,10 @@ public class cargarArchivo extends javax.swing.JFrame {
      * Crea una ventana que permite escoger un archivo
      */
     public cargarArchivo() {
-        initComponents();
-        
-        miPC  =  new PC();
-        
+        initComponents();      
+        miPC  =  new PC();        
         inicializarTablas(miPC.getEspacioMemoria(), miPC.getEspacioDisco());
-        
-        
-        
-        
+  
     }
 
     public static PC getMiPC() {
@@ -123,10 +120,8 @@ public class cargarArchivo extends javax.swing.JFrame {
 
         jPanel3 = new javax.swing.JPanel();
         botSiguiente = new javax.swing.JButton();
-        limpiar = new javax.swing.JButton();
         cargarArchivo = new javax.swing.JButton();
         ejecutar = new javax.swing.JButton();
-        botEstadisticas = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -175,16 +170,6 @@ public class cargarArchivo extends javax.swing.JFrame {
             }
         });
 
-        limpiar.setText("Limpiar");
-        limpiar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        limpiar.setBorderPainted(false);
-        limpiar.setPreferredSize(new java.awt.Dimension(100, 30));
-        limpiar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                limpiarActionPerformed(evt);
-            }
-        });
-
         cargarArchivo.setText("Cargar programas");
         cargarArchivo.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         cargarArchivo.setBorderPainted(false);
@@ -202,16 +187,6 @@ public class cargarArchivo extends javax.swing.JFrame {
         ejecutar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ejecutarActionPerformed(evt);
-            }
-        });
-
-        botEstadisticas.setText("Estadisticas");
-        botEstadisticas.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        botEstadisticas.setBorderPainted(false);
-        botEstadisticas.setPreferredSize(new java.awt.Dimension(100, 30));
-        botEstadisticas.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botEstadisticasActionPerformed(evt);
             }
         });
 
@@ -881,33 +856,29 @@ public class cargarArchivo extends javax.swing.JFrame {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(cargarArchivo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(ejecutar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(botSiguiente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(limpiar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(botEstadisticas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(74, 74, 74))
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(27, 27, 27)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane4)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 349, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(cargarArchivo, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(ejecutar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
-                    .addComponent(jScrollPane5)
-                    .addComponent(inputPantalla))
+                        .addComponent(botSiguiente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jScrollPane4)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 349, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
+                            .addComponent(jScrollPane5)
+                            .addComponent(inputPantalla))))
                 .addContainerGap(22, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
@@ -915,9 +886,7 @@ public class cargarArchivo extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(22, 22, 22)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(limpiar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(botSiguiente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(botEstadisticas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(ejecutar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cargarArchivo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(39, 39, 39)
@@ -973,18 +942,28 @@ public class cargarArchivo extends javax.swing.JFrame {
     
     public void actualizarValorEnReservada(int offset, String valor){
         int direccion = Integer.parseInt(bcpActualInput.getText()) + offset;
-        System.out.println("Bcp indice: " + direccion);
         tablaMemoria.setValueAt(valor, direccion, 1);
     }
-    private void ejecutarAccion(){
+    
+    //identificar el operador y llamar a la accion correspondiente ademas de determianar si el programa finaliza
+    private void ejecutarAccion() {
         String[] instruccion = tablaMemoria.getValueAt(miPC.getBcpActual().getPC(), 1).toString().split("[,\\s]+");
         String operador = instruccion[0];
         pesoEjecutado += 1;
-        BCP bcpActual =miPC.getBcpActual();
+        BCP bcpActual = miPC.getBcpActual();
         visualisarPesoEjecutado(bcpActual);
-        
-        if(pesoEjecutado == pesosInstruccion.get(operador)){
-            
+        if (operador.equals("INT")) {
+            miPC.getBcpActual().setEstado("En espera");
+            miPC.getBcpActual().setEstadoInterrupcion(instruccion[1]);
+            actualizarBCPSMemoria();
+        } else {
+            miPC.getBcpActual().setEstado("En ejecucion");
+            miPC.getBcpActual().setEstadoInterrupcion("Preparado");
+            actualizarBCPSMemoria();
+        }
+        tablaProcesos.setValueAt(bcpActual.getEstado(), miPC.getBcps().indexOf(bcpActual), 2);
+        if (pesoEjecutado == pesosInstruccion.get(operador)) {
+
             if (operador.equals("LOAD")) {
                 miPC.ejecutarLoad(instruccion[1]);
                 actualizarInput("AC");
@@ -998,7 +977,6 @@ public class cargarArchivo extends javax.swing.JFrame {
                     actualizarInput(instruccion[1]);
                 } else if (Asistente.esEntero(instruccion[2])) {
                     miPC.ejecutarMov(instruccion[1], Integer.parseInt(instruccion[2]));
-                    System.out.println("+++++" + Integer.parseInt(instruccion[2]));
                     actualizarInput(instruccion[1]);
                 }
             } else if (operador.equals("ADD")) {
@@ -1007,102 +985,113 @@ public class cargarArchivo extends javax.swing.JFrame {
             } else if (operador.equals("SUB")) {
                 miPC.ejecutarSub(instruccion[1]);
                 actualizarInput("AC");
-            }else if (operador.equals("INC")) {
-                if (instruccion.length == 2){
+            } else if (operador.equals("INC")) {
+                if (instruccion.length == 2) {
                     miPC.ejecutarINCRegistro(instruccion[1]);
                     actualizarInput(instruccion[1]);
-                }else if(instruccion.length == 1){
+                } else if (instruccion.length == 1) {
                     miPC.ejecutarINC();
                     actualizarInput("AC");
                 }
-            }else if (operador.equals("DEC")) {
-                if (instruccion.length == 2){
+            } else if (operador.equals("DEC")) {
+                if (instruccion.length == 2) {
                     miPC.ejecutarDECRegistro(instruccion[1]);
                     actualizarInput(instruccion[1]);
-                }else if(instruccion.length == 1){
+                } else if (instruccion.length == 1) {
                     miPC.ejecutarDEC();
                     actualizarInput("AC");
                 }
-            }else if (operador.equals("SWAP")) {
+            } else if (operador.equals("SWAP")) {
                 miPC.ejecutarSwap(instruccion[1], instruccion[2]);
                 actualizarInput(instruccion[1]);
                 actualizarInput(instruccion[2]);
-            }else if (operador.equals("INT")){
+            } else if (operador.equals("INT")) {
                 switch (instruccion[1]) {
                     case "20H":
-                        miPC.getBcpActual().setEstadoInterrupcion("20H");
                         miPC.ejecutarINT20H();
                         break;
                     case "10H":
-                        miPC.getBcpActual().setEstadoInterrupcion("10H");
                         miPC.ejecutarINT10H();
-                        pantalla.setText(">> " +Integer.toString(bcpActual.getRegistros().get("DX").getValor()));
+                        pantalla.setText(">> " + Integer.toString(bcpActual.getRegistros().get("DX").getValor()));
                         //actualizarValorEnReservada(1);
                         break;
                     case "09H":
                         botSiguiente.setEnabled(false);
                         solicitarInt09H();
-                        miPC.getBcpActual().setEstadoInterrupcion("09H");
                         break;
                     default:
                         break;
                 }
-            }else if(operador.equals("JMP")){
+            } else if (operador.equals("JMP")) {
                 ejecutarSalto(instruccion);
-            }else if (operador.equals("CMP")){
+            } else if (operador.equals("CMP")) {
                 miPC.ejecutarCMP(instruccion[1], instruccion[2]);
-            }else if (operador.equals("JE")){
-                if(bcpActual.getComp()){
+            } else if (operador.equals("JE")) {
+                if (bcpActual.getComp()) {
                     ejecutarSalto(instruccion);
                 }
-            }else if (operador.equals("JNE")){
-                if(!bcpActual.getComp()){
+            } else if (operador.equals("JNE")) {
+                if (!bcpActual.getComp()) {
                     ejecutarSalto(instruccion);
                 }
-            }else if(operador.equals("PARAM")){
+            } else if (operador.equals("PARAM")) {
                 Stack<Integer> pila = bcpActual.getPila();
                 List<String> params = Arrays.asList(instruccion).subList(1, instruccion.length);
-                System.out.println(Arrays.asList(params));
-                for(String param : params){
-                   bcpActual.agregarAPila(Integer.parseInt(param));
-                    
+                for (String param : params) {
+                    bcpActual.agregarAPila(Integer.parseInt(param));
+
                 }
-                System.out.println(pila.size());
-                System.out.println(Arrays.asList(pila).toString());
                 
-            }else if(operador.equals("PUSH")){
+
+            } else if (operador.equals("PUSH")) {
                 miPC.ejecutarPUSH(instruccion[1]);
                 actualizarInput(instruccion[1]);
-                
-            }else if(operador.equals("POP")){
+
+            } else if (operador.equals("POP")) {
                 miPC.ejecutarPOP(instruccion[1]);
                 actualizarInput(instruccion[1]);
-                
+
             }
-                    
-            miPC.getBcpActual().setEstadoInterrupcion("En espera");
+
             pesoEjecutado = 0;
-            instruccionActual = bcpActual.getPC()+1;
-            
+            instruccionActual = bcpActual.getPC() + 1;
+
             bcpActual.setPC(instruccionActual);
+            actualizarBCPSMemoria();
             pcInput.setText(Integer.toString(instruccionActual));
             try {
                 irInput.setText(tablaMemoria.getValueAt(instruccionActual, 1).toString());
             } catch (Exception e) {
             }
-            
-            if(instruccionActual >= bcpActual.getAlcance() + bcpActual.getBase()){
+
+            if (instruccionActual >= bcpActual.getAlcance() + bcpActual.getBase()) {
                 System.out.println("Sguiente programa");
                 siguientePrograma();
                 instruccionActual = miPC.getBcpActual().getPC();
             }
-            
-            
+
         }
     }
   
-        
+    //mantiene los datos del bcp actualizados en ui 
+    public void actualizarBCPSMemoria() {
+        BCP bcpActual =  miPC.getBcpActual();
+        tablaMemoria.setValueAt("PC: " + bcpActual.getPC(), indiceMemoriaBcpActual * 21 + 2, 1);
+        tablaMemoria.setValueAt("AC: " + bcpActual.getRegistros().get("AC").getValor(), indiceMemoriaBcpActual * 21 + 3, 1);
+        tablaMemoria.setValueAt("AX: " + bcpActual.getRegistros().get("AX").getValor(), indiceMemoriaBcpActual * 21 + 4, 1);
+        tablaMemoria.setValueAt("BX: " + bcpActual.getRegistros().get("BX").getValor(), indiceMemoriaBcpActual * 21 + 5, 1);
+        tablaMemoria.setValueAt("CX: " + bcpActual.getRegistros().get("CX").getValor(), indiceMemoriaBcpActual * 21 + 6, 1);
+        tablaMemoria.setValueAt("DX: " + bcpActual.getRegistros().get("DX").getValor(), indiceMemoriaBcpActual * 21 + 7, 1);
+        tablaMemoria.setValueAt("Pila 0: " + bcpActual.getPila().get(0), indiceMemoriaBcpActual * 21 + 8, 1);
+        tablaMemoria.setValueAt("Pila 1: " + bcpActual.getPila().get(1), indiceMemoriaBcpActual * 21 + 9, 1);
+        tablaMemoria.setValueAt("Pila 2: " + bcpActual.getPila().get(2), indiceMemoriaBcpActual * 21 + 10, 1);
+        tablaMemoria.setValueAt("Pila 3: " + bcpActual.getPila().get(3), indiceMemoriaBcpActual * 21 + 11, 1);
+        tablaMemoria.setValueAt("Pila 4: " + bcpActual.getPila().get(4), indiceMemoriaBcpActual * 21 + 12, 1);
+        tablaMemoria.setValueAt("Estado interrupcion: " + bcpActual.getEstadoInterrupcion(), indiceMemoriaBcpActual * 21 + 16, 1);
+    }
+    
    
+    //muestra el peso de cada paso en cpu
     public void visualisarPesoEjecutado(BCP bcpActual) {
         int indicePrueba = miPC.getBcps().indexOf(bcpActual);
         bcpActualInput.setText(Integer.toString(indicePrueba));
@@ -1110,10 +1099,9 @@ public class cargarArchivo extends javax.swing.JFrame {
         tablaejecucion.setValueAt("//////////", indicePrueba, tablaejecucion.getColumnCount() - 1);
     }
     
-    
+    //valida que un salto sea posible y los ejecuta
     public void ejecutarSalto(String[] instruccion) {
         int nuevaIns = miPC.getBcpActual().getPC() + Integer.parseInt(instruccion[1])-1;
-        System.out.println("Instruccion actual: " + nuevaIns);
         if (miPC.getBcpActual().getBase() <= nuevaIns && nuevaIns <= miPC.getBcpActual().getBase() + miPC.getBcpActual().getAlcance()) {
             System.out.println("Dentro");
             miPC.getBcpActual().setPC(nuevaIns);
@@ -1123,13 +1111,13 @@ public class cargarArchivo extends javax.swing.JFrame {
         }
     }
     
+    //solicita entrada de texto hasta que se presione enter y valida que sea un numero 
     public void solicitarInt09H(){
         inputPantalla.requestFocus();
         inputPantalla.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String text = inputPantalla.getText();
-                System.out.println(text);
                 if(Asistente.esEntero(text)){
                     pantalla.setText(text);
                     miPC.getBcpActual().getRegistros().get("DX").setValor(Integer.parseInt(text));
@@ -1148,22 +1136,23 @@ public class cargarArchivo extends javax.swing.JFrame {
         inputPantalla.setText(null);
     }    
         
-        
+    //avanza al siguiente programa    
     private void siguientePrograma(){
         miPC.getBcpActual().setEstado("Finalizado");
+        miPC.getBcpActual().setTiempoFin(new Date());
         String estadoActual = miPC.getBcpActual().getEstado();
         
         int indicePrueba = miPC.getBcps().indexOf(miPC.getBcpActual());
-        tablaMemoria.setValueAt("Estado: " +estadoActual, indicePrueba*21+1,1);
+        tablaMemoria.setValueAt("Estado: " +estadoActual, indiceMemoriaBcpActual*21+1,1);
         tablaProcesos.setValueAt(estadoActual, indicePrueba, 2);
-        
+        indiceMemoriaBcpActual++;
         cantProcesosEjecutados++;
         boolean haySiguiente = miPC.getBcpActual().getSiguienteBPC()!=-1 && miPC.siguienteBCP();
         if (haySiguiente) {
             estadoActual = miPC.getBcpActual().getEstado();
 
             indicePrueba = miPC.getBcps().indexOf(miPC.getBcpActual());
-            tablaMemoria.setValueAt("Estado: " + estadoActual, indicePrueba * 21 + 1, 1);
+            tablaMemoria.setValueAt("Estado: " + estadoActual, indiceMemoriaBcpActual * 21 + 1, 1);
             tablaProcesos.setValueAt(estadoActual, indicePrueba, 2);
 
             acInput.setText(Integer.toString(miPC.getBcpActual().getRegistros().get("AC").getValor()));
@@ -1171,6 +1160,8 @@ public class cargarArchivo extends javax.swing.JFrame {
             bxInput.setText(Integer.toString(miPC.getBcpActual().getRegistros().get("BX").getValor()));
             cxInput.setText(Integer.toString(miPC.getBcpActual().getRegistros().get("CX").getValor()));
             dxInput.setText(Integer.toString(miPC.getBcpActual().getRegistros().get("DX").getValor()));
+            miPC.getBcpActual().setTiempoInicio(new Date());
+            tablaMemoria.setValueAt("inicio: " + miPC.getBcpActual().getTiempoInicio().toString(), indiceMemoriaBcpActual * 21 + 14, 1);
         }else{
             if(miPC.siguienteBCP()){
                 direccionMemoriaReservada=0;
@@ -1178,22 +1169,35 @@ public class cargarArchivo extends javax.swing.JFrame {
                 for(int i = 0; i < tablaMemoria.getRowCount();i++){
                     tablaMemoria.setValueAt(null, i, 1);
                 }
+                indiceMemoriaBcpActual = 0;
                 siguientesProgramas();
+                miPC.getBcpActual().setTiempoInicio(new Date());
+                tablaMemoria.setValueAt("inicio: " + miPC.getBcpActual().getTiempoInicio().toString(), indiceMemoriaBcpActual * 21 + 14, 1);
             }else{
                 botSiguiente.setEnabled(false);
                 terminarEjecucion = true;
-            }
-            
-            
+                poblarEstadisticas();
+                fEstadisticas.setVisible(true);
+            }   
         }
-        
-
-
     }    
     
-    
-    
-    //Solicita a miPc la ejecucion de la instruccion
+    //rellena la tabla de estadisticas
+    public void poblarEstadisticas(){
+        int i = 0;
+        for(BCP elemento:miPC.getBcps()){
+            estadisticas.tablaEstadisticas.setValueAt(i, i, 0);
+            estadisticas.tablaEstadisticas.setValueAt(elemento.getIdentificador(), i, 1);
+            estadisticas.tablaEstadisticas.setValueAt(elemento.getTiempoInicio().toString(), i, 2);
+            estadisticas.tablaEstadisticas.setValueAt(elemento.getTiempoFin().toString(), i, 3);
+
+             long ms = elemento.getTiempoFin().getTime() - elemento.getTiempoInicio().getTime();
+             long segundos = (ms % (60 * 1000)) / 1000;
+             estadisticas.tablaEstadisticas.setValueAt(segundos + "Segundos", i, 4);
+
+            i++;
+        }
+    }
     
     
     //Luego de la ejecución de la instrucción actualiza la interfaz grafica
@@ -1217,46 +1221,22 @@ public class cargarArchivo extends javax.swing.JFrame {
     }
     
     
-    //Resetea el programa para una nueva ejecucion
-    private void limpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_limpiarActionPerformed
-        // TODO add your handling code here:
-        for (int i = 0; i < 100; i++) {
-            tablaMemoria.setValueAt(null, i, 1);
-            tablaMemoria.setValueAt(null, i, 2);
-        }
-        pcInput.setText("");
-        acInput.setText("");
-        irInput.setText("");
-        axInput.setText("");
-        bxInput.setText("");
-        cxInput.setText("");
-        dxInput.setText("");
-        
-    }//GEN-LAST:event_limpiarActionPerformed
-
     
     /*
-        ejecutar
-        Luego de haber cargado el archivo inicia los procesos necesarios para la ejecución de cada instruccion
-        -crea la lista de instrucciones asm
-        -crea la lista de instrucciones bin
-        -escoge una posicion inicial para las instrucciones
+        Proceso de ejecucion automatico
+        cada segundo ejecuta la siguiente instruccion
     */
     private void ejecutarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ejecutarActionPerformed
         // TODO add your handling code here:
-        timer = new Timer(200, new ActionListener() {
-
+        timer = new Timer(1000, new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-
                 botSiguiente.doClick();
                 if (terminarEjecucion) {
                     timer.stop();
-                    //...Update the GUI...
                 }
             }
         });
-            timer.start();
-            //SwingUtilities.updateComponentTreeUI(tablaProcesos);
+        timer.start();
 
     }//GEN-LAST:event_ejecutarActionPerformed
 
@@ -1267,9 +1247,7 @@ public class cargarArchivo extends javax.swing.JFrame {
         chooser.setMultiSelectionEnabled(true);
         chooser.showOpenDialog(cargarArchivo);
         archivos = chooser.getSelectedFiles();
-        for (File archivo : archivos) {
-            System.out.println(archivo.getName());
-        }
+        
         try {
             ArrayList<ArrayList<String[]>> archivosValidados = Asistente.validarArchivos(archivos);
             if(archivosValidados != null){
@@ -1297,6 +1275,7 @@ public class cargarArchivo extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_cargarArchivoActionPerformed
 
+    //inicializa los primeros programas en memoria
     public void inicializarMemoria(){
         int cantProcesosEjecutar = 5;
         for(int proceso =0; proceso <cantProcesosEjecutar && proceso < archivos.length; proceso++){
@@ -1304,18 +1283,20 @@ public class cargarArchivo extends javax.swing.JFrame {
         }
     }
     
+    //avanza al siguiente set de programas
     public void siguientesProgramas(){
         int cantProcesosEjecutar = 5;
         for(int proceso =0; proceso <cantProcesosEjecutar && cantProcesosEjecutados+proceso < archivos.length; proceso++){
             inicializarProceso(cantProcesosEjecutados+proceso, proceso);
         }
-        System.out.println("sali siguiente");
+        miPC.getBCPat(cantProcesosEjecutados).setEstado("En ejecución");
+        tablaProcesos.setValueAt("En ejecución", cantProcesosEjecutados, 2);
     }
     
+    
+    //agrega todos los valores del bcp a memoria y cambia el estado a preparado
     public void inicializarProceso(int proceso, int i ) {
-        System.out.println("antes");
-        miPC.getBCPat(proceso).setEstado("En espera");
-        System.out.println("despues");
+        miPC.getBCPat(proceso).setEstado("Preparado");
         BCP actual = miPC.getBCPat(proceso);
         actual.setSiguienteBPC(direccionMemoriaReservada + 21);
         String idProceso = actual.getIdentificador();
@@ -1375,7 +1356,7 @@ public class cargarArchivo extends javax.swing.JFrame {
         tablaMemoria.setValueAt("Estado interrupcion: " + actual.getEstadoInterrupcion(), direccionMemoriaReservada, 1);
         direccionMemoriaReservada++;
 
-        if(i==4){
+        if(i==4 || miPC.getBcps().indexOf(actual)== archivos.length-1){
             actual.setSiguienteBPC(-1);
         }
         tablaMemoria.setValueAt("siguiente BCP: " + actual.getSiguienteBPC(), direccionMemoriaReservada, 1);
@@ -1396,25 +1377,19 @@ public class cargarArchivo extends javax.swing.JFrame {
 
     }
     
+    //transfiere las instrucciones del disco a la memoria
     public String[] getArchivoFromDisco(String idProceso) {
-        System.out.println("getArchivoFromDisco");
         for(int i = 0;i< posActualReservada;i++){
             String[] valorFila = tablaDisco.getValueAt(i, 1).toString().split(",");
          
             String idArchivo =valorFila[0];
             int inicioArchivo = Integer.parseInt(valorFila[1].trim());
             int finArchivo = Integer.parseInt(valorFila[2].trim());
-            System.out.println(valorFila[0]);
-            System.out.println(inicioArchivo);
-            System.out.println(finArchivo);
-            
-             
             if(idProceso.equals(valorFila[0])){
                 String[] archivo = new String[finArchivo-inicioArchivo+1];
                 int cont = 0;
                 for(int j = inicioArchivo; j<=finArchivo;j++){
                     String instruccionString = tablaDisco.getValueAt(j, 1).toString();
-                    System.out.println(instruccionString);
                     archivo[cont] = instruccionString;
                     cont++;
                 }
@@ -1428,17 +1403,15 @@ public class cargarArchivo extends javax.swing.JFrame {
         
     }
     
+    //Carga los programas al disco
     public void cargarEnDisco(ArrayList<ArrayList<String[]>> archivosValidados ) throws InterruptedException{
         
             posIni = archivos.length + 10;
             posActual = posIni;
             posIniReservada = 0;
             posActualReservada = 0;
-            System.out.println(archivosValidados.size());
             int i = 0;
             for (ArrayList<String[]> archivo : archivosValidados) {
-                System.out.println(archivos[i].getName());
-                System.out.println(Arrays.deepToString(archivo.toArray()));
                 System.out.println("Cantidad de archivos: " + archivos.length);
                 String temp = archivos[i].getName() + "," + Integer.toString(posActual) + ", " + Integer.toString(posActual + archivo.size()-1);
                 tablaDisco.setValueAt(temp, posActualReservada, 1);
@@ -1461,44 +1434,23 @@ public class cargarArchivo extends javax.swing.JFrame {
                     posActual++;
 
                 }
-
-                //posActual += archivo.size()+1;
                 i++;
-                //TimeUnit.SECONDS.sleep(1);
             }  
             
     }
     
+    //Crea el bcp correspondiente a un programa
     public void crearBCP(String nombre, int numeroBCP) throws InterruptedException{
         BCP bcpNuevo = new BCP(nombre);
         miPC.addBCP(bcpNuevo);
         tablaProcesos.setValueAt(numeroBCP, numeroBCP, 0);
         tablaProcesos.setValueAt(nombre, numeroBCP, 1);
         tablaProcesos.setValueAt(miPC.getBcps().get(numeroBCP).getEstado(), numeroBCP, 2);
-        
-        
         tablaejecucion.setValueAt("P "+nombre, numeroBCP, 0);
-        //for(int i = tablaejecucion.getColumnCount()+1; i <5;i++){
-            timer = new Timer(1000, new ActionListener() {
-            int i = tablaejecucion.getColumnCount()-1;
-            public void actionPerformed(ActionEvent evt) {
-                
-                agregarColumna(0,i);
-                tablaejecucion.setValueAt("////////////////", 0, i+1);
-                if (i == 20) {
-                    timer.stop();
-                    //...Update the GUI...
-                }
-                i++;
-            }    
-        });
-            //timer.start();
-            //SwingUtilities.updateComponentTreeUI(tablaProcesos);
-        //}
        
     }
     
-    
+    //agrega una columna a la tabla de cpu para mostrar el tiempo 
     public int agregarColumna(int fila , int colu){
         DefaultTableModel modelo = (DefaultTableModel) tablaejecucion.getModel();
         modelo.addColumn(colu);
@@ -1507,17 +1459,8 @@ public class cargarArchivo extends javax.swing.JFrame {
         return 0;
     }
         
-    
-    public void siguienteInstruccion(){
-        
-        
-    }
-    
-    private void botEstadisticasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botEstadisticasActionPerformed
-        // TODO add your handling code here:
-        System.out.println(tablaDisco.getValueAt(0, 1));
-    }//GEN-LAST:event_botEstadisticasActionPerformed
 
+    
     private void dxInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dxInputActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_dxInputActionPerformed
@@ -1583,7 +1526,6 @@ public class cargarArchivo extends javax.swing.JFrame {
     private javax.swing.JTextField acInput;
     private javax.swing.JTextField axInput;
     private javax.swing.JTextField bcpActualInput;
-    private javax.swing.JButton botEstadisticas;
     private javax.swing.JButton botSiguiente;
     private javax.swing.JTextField bxInput;
     private javax.swing.JButton cargarArchivo;
@@ -1607,7 +1549,6 @@ public class cargarArchivo extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
-    private javax.swing.JButton limpiar;
     private javax.swing.JTextArea pantalla;
     private javax.swing.JTextField pcInput;
     public static javax.swing.JTable tablaDisco;
